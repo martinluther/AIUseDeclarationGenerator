@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MLC AI Use Declaration Generator</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link rel="mask-icon" href="assets/favicon.svg" color="#000000">
+  <link rel="icon" href="assets/favicon.svg">
+  <link rel="shortcut icon" href="assets/favicon.svg">
+  <style>
+    body {
+      background-color: #003d6b;
+    }
+
+    header {
+      color: white;
+      background-color: #003d6b;
+    }
+
+    h1 {
+      background-image: url(assets/mlc-logo.svg);
+      background-size: 50px 50px;
+      background-repeat: no-repeat;
+      background-position: left center;
+      padding-left: 60px;
+      padding-bottom: 20px;
+      padding-top: 20px;
+    }
+
+    main {
+      min-height: 100%;
+      background-color: white;
+    }
+
+    footer {
+      color: white;
+      background-color: #003d6b;
+    }
+
+    .btn {
+      color: white;
+      background-color: #003d6b;
+    }
+
+    .form-label {
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    .pre-wrap {
+      white-space: pre-wrap;
+    }
+    .card-body label{
+      margin: .15rem
+    }
+    .col {
+      min-height: 600px
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="container">
+      <h1 class="">AI Use Delcaration Generator</h1>
+    </div>
+  </header>
+  <main id="app">
+    <div class="container py-4">
+      <div class="row w-100">
+        <!-- input: -->
+        <div class="col">
+          <div class="card text-bg-light mb-3">
+            <div class="card-body">
+              <div class="mb-3">
+                <div class="form-label text-center">What level of the AI Assessment Scale should be used for this assignment?</div>
+                <div class="form-check" v-for="(level, i) of levels">
+                  <input :value="i+1" class="form-check-input" type="radio" name="levelSelection" :id="level" v-model="selectedLevel" />
+                  <label class="form-check-label" :for="level"><b>{{level.substring(0, level.indexOf('-'))}}</b>{{level.substring(level.indexOf('-'))}}</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div v-if="selectedLevel > 1 && selectedLevel <= 5" class="col">
+          <div class="card text-bg-light mb-3">
+            <div class="card-body text-center">
+              <div class="mb-3">
+                <div class="form-label">Which service(s) may students use in this assignment?</div>
+
+                <div v-for="service in servicesList">
+                  <input type="checkbox" :id="service" :value="service" v-model="usedServicesList" />
+                  <label :for="service">&nbsp;{{service}}</label>
+                </div>
+                <div>
+                  <input type="checkbox" id="other" value="other" v-model="usedOther" />
+                  <label for="other">&nbsp;Other <span v-if="usedOther">(please specify)</span></label>
+
+                  <input v-if="usedOther" type="text" v-model="otherServices">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card text-bg-light mb-3">
+            <div class="card-body text-center">
+              <div class="mb-3">
+                <div class="form-label">In what ways can AI be used in this assignment?</div>
+              </div>
+              <div class="mb-3">
+                <div class="form-label">Writing</div>
+                <div v-for="(item, i) of writingList">
+                  <input type="checkbox" :id="item" :value="i" v-model="usedWritingList" />
+                  <label :for="item">&nbsp;{{item}}</label>
+                </div>
+              </div>
+              <div class="mb-3">
+                <div class="form-label">Reading</div>
+                <div v-for="(item, i) of readingList">
+                  <input type="checkbox" :id="item" :value="i" v-model="usedReadingList" />
+                  <label :for="item">&nbsp;{{item}}</label>
+                </div>
+              </div>
+              <div class="mb-3">
+                <div class="form-label">Research</div>
+                <div v-for="(item, i) of researchList">
+                  <input type="checkbox" :id="item" :value="i" v-model="usedResearchList" />
+                  <label :for="item">&nbsp;{{item}}</label>
+                </div>
+                <div>
+                  <label for="persona"><input type="checkbox" id="persona" value="persona" v-model="usedPersona" />&nbsp;Use AI to create a persona of an <br class="d-none d-md-block">expert / historical figure and question them <span v-if="usedPersona">(please specify)</span></label>
+
+                  <input v-if="usedPersona" type="text" v-model="persona">
+                </div>
+              </div>
+              <div class="mb-3">
+                <div class="form-label">Audio Visual</div>
+                <div v-for="(item, i) of audVidList">
+                  <input type="checkbox" :id="item" :value="i" v-model="usedAudVidList" />
+                  <label :for="item">&nbsp;{{item}}</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- output: -->
+        <div class="col">
+          <div v-if="selectedLevel !== ''" class="card text-bg-light mb-3">
+            <div class="card-body pre-wrap">
+              <div id="copy-text" title="copy text" @click="copyTheFullText()" class="mb-3 text-end">
+                <label for="copy-text"><small>Click to copy text </small></label>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                  class="bi bi-clipboard" viewBox="0 0 16 16">
+                  <path
+                    d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1z" />
+                  <path
+                    d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0z" />
+                </svg>
+              </div>
+              <span v-html="getTheFullText()"></span>
+            </div>
+          </div>
+          <div v-if="selectedLevel > 0 && selectedLevel <= 5" class="card text-bg-light mb-3">
+            <div class="card-body text-center">
+              <div class="mb-3">
+                <b>Instructors</b> — please copy and paste the above text into your assignment instructions to help guide student use of AI.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p class="text-center my-4">
+        This generator is based on The AI Assessment Scale. For more information, visit <a class="text-white" href="https://aiassessmentscale.com/">aiassessmentscale.com</a>.
+        <br><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><img src="assets/by-nc-sa.png" width="117" height="41" alt="CC BY-NC-SA 4.0 DEED"></a>
+        &nbsp;Perkins, Furze, Roe & MacVaugh (2024). The AI Assessment Scale
+      </p>
+    </div>
+  </footer>
+  <script>
+    const { createApp, ref } = Vue
+
+    const vm = createApp({
+
+      data() {
+        return {
+          selectedLevel: '',
+          levels: [
+            'No AI - The assessment is completed entirely without AI assistance in a controlled environment, ensuring that students rely solely on their existing knowledge, understanding, and skills.',
+            'AI Planning - AI may be used for pre-task activities such as brainstorming, outlining and initial research. This level focuses on the effective use of AI for planning, synthesis, and ideation, but assessments should emphasise the ability to develop and refine these ideas independently.',
+            'AI Collaboration - AI may be used to help complete the task, including idea generation, drafting, feedback, and refinement. Students should critically evaluate and modify the AI suggested outputs, demonstrating their understanding.',
+            'Full AI - AI may be used to complete any elements of the task, with students directing AI to achieve the assessment goals. Assessments at this level may also require engagement with AI to achieve goals and solve problems.',
+            'AI Exploration - You should use AI creatively to solve the task, potentially co-designing new approaches with your instructor.',
+          ],
+          levelOutputlist: [
+            'No AI - You must not use AI at any point during the assessment. You must demonstrate your core skills and knowledge.',
+            'AI Planning - You may use AI for planning, idea development, and research. Your final submission should show how you have developed and refined these ideas.',
+            'AI Collaboration - You may use AI to assist with specific tasks such as drafting text, refining and evaluating your work. You must critically evaluate and modify any AI-generated content you use.',
+            'Full AI - You may use AI extensively throughout your work either as you wish, or as specifically directed in your assessment. Focus on directing AI to achieve your goals while demonstrating your critical thinking.',
+            'AI Exploration - You should use AI creatively to solve the task, potentially co-designing new approaches with your instructor.',
+          ],
+          servicesList: ["ChatGPT", "Gemini", "CoPilot", 'Claude', 'School AI', 'Magic School', 'Grammarly AI', 'Perplexity'],
+          usedServicesList: [],
+          otherServices: '',
+          usedOther: false,
+          writingList: ['Generate Ideas', 'Draft', 'Outline', 'Rephrase', 'Get Unstuck', 'Review / Provide Feedback'],
+          usedWritingList: [],
+          writingOutputList: [
+            'generate ideas',
+            'help you with drafting your work',
+            'generate an outline for your work',
+            'rephrase your words to make them more clear, concise, or have a certain style like \"more professional\"',
+            'generate examples to help your writing process to progress',
+            'give you feedback and review your work'
+          ],
+          readingList: ['Simplify', 'Translate', 'Summarize'],
+          usedReadingList: [],
+          readingOutputList: [
+            'help you simplify complex text',
+            'help you translate text so you can understand it',
+            'summarize a complicated text'
+          ],
+          researchList: ['Research', 'Ask AI to make connections'],
+          usedResearchList: [],
+          persona: '',
+          researchOutputList: [
+            'General research: Please note - AI is not always a reliable source. Find at least one other reliable source.',
+            'Ask AI to make connections with your interests or knowledge you already have',
+          ],
+          usedPersona: false,
+          audVidList: ['Generate Image', 'Produce Song', 'Create Video', 'Build Presentation'],
+          usedAudVidList: [],
+          audVidOutputList: [
+            'Generate an image',
+            'Produce a song',
+            'Create a video',
+            'Build a presentation'
+          ],
+        }
+      },
+      methods: {
+        copyTheFullText() {
+          let output = this.getTheFullText();
+          navigator.clipboard.writeText(output);
+        },
+        getTheFullText() {
+          let output = [];
+          lvl = this.levelOutputlist[this.selectedLevel-1]
+          output.push(`<b>${lvl.substring(0, lvl.indexOf('-'))}</b>${lvl.substring(lvl.indexOf('-'))}`)
+
+          if (this.selectedLevel > 1 && this.selectedLevel <= 5) {
+            // used services:
+            if (this.usedServicesList.length > 0 || this.usedOther) {
+              output.push('\n\nFeel free to use the following tools on your assignment:')
+              output.push(this.usedServicesList.map(x=>'\n• '+x).join(''));
+            }
+            if (this.usedOther != '') {
+              output.push(this.otherServices.split(' ').map(x=>'\n• '+x).join(''));
+            }
+            // writing
+            if (this.usedWritingList.length > 0 ) {
+              output.push('\n\n✏️ You can use AI for content creation in the following ways:')
+              output.push(this.usedWritingList.map(x=>'\n• '+this.writingOutputList[x]).join(''));
+            }
+            // reading
+            if (this.usedReadingList.length > 0 ) {
+              output.push('\n\n💡 You can use AI for content creation in the following ways:')
+              output.push(this.usedReadingList.map(x=>'\n• '+this.readingOutputList[x]).join(''));
+            }
+            //research
+            if (this.usedResearchList.length > 0 || this.usedPersona) {
+              output.push('\n\n🔍 You can use AI for research assistance in the following ways:')
+              output.push(this.usedResearchList.map(x=>'\n• '+this.researchOutputList[x]).join(''));
+            }
+            if (this.usedPersona != '') {
+              output.push(`Use AI to create a persona of an expert/historical figure and question them. The specific persona you can use is ${this.persona}`.split().map(x=>'\n• '+x).join(''));
+            }
+            // audio visual
+            if (this.usedAudVidList.length > 0 ) {
+              output.push('\n\n📹 You can use AI for generating audio and/or visual content in the following ways:')
+              output.push(this.usedAudVidList.map(x=>'\n• '+this.audVidOutputList[x]).join(''));
+            }
+          }
+          
+          return output.join('');
+        }
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>

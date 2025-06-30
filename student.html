@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MLC AI Use Declaration Generator</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link rel="mask-icon" href="assets/favicon.svg" color="#000000">
+  <link rel="icon" href="assets/favicon.svg">
+  <link rel="shortcut icon" href="assets/favicon.svg">
+  <style>
+    body {
+      background-color: #003d6b;
+    }
+
+    header {
+      color: white;
+      background-color: #003d6b;
+    }
+
+    h1 {
+      background-image: url(assets/mlc-logo.svg);
+      background-size: 50px 50px;
+      background-repeat: no-repeat;
+      background-position: left center;
+      padding-left: 60px;
+      padding-bottom: 20px;
+      padding-top: 20px;
+    }
+
+    main {
+      min-height: 100%;
+      background-color: white;
+    }
+
+    footer {
+      color: white;
+      background-color: #003d6b;
+    }
+
+    .btn {
+      color: white;
+      background-color: #003d6b;
+    }
+
+    .form-label {
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    .pre-wrap {
+      white-space: pre-wrap;
+    }
+    .col {
+      min-height: 600px
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="container">
+      <h1 class="">AI Use Delcaration Generator</h1>
+    </div>
+  </header>
+  <main id="app">
+    <div class="container py-4">
+      <div class="row w-100">
+        <!-- input: -->
+        <div class="col">
+          <h2 class="h6 text-uppercase text-center"></h2>
+          <div class="card text-bg-light mb-3">
+            <div class="card-body text-center">
+              <div class="mb-3">
+                <div class="form-label">Did you use AI in this assignment?</div>
+
+                <input value="on" type="radio" class="btn-check" autocomplete="off" id="used-ai1" v-model="usedAi">
+                <label class="btn mx-2 btn-secondary" for="used-ai1">Yes</label>
+                <input value="off" type="radio" class="btn-check" autocomplete="off" id="used-ai2" v-model="usedAi">
+                <label class="btn mx-2 btn-secondary" for="used-ai2">No</label>
+              </div>
+            </div>
+          </div>
+          <div v-if="usedAi === 'on'">
+            <div class="card text-bg-light mb-3">
+              <div class="card-body text-center">
+                <div class="mb-3">
+                  <div class="form-label">Which service(s) did you use in this assignment?</div>
+
+                  <div class="m-1" v-for="service in servicesList">
+                    <input type="checkbox" :id="service" :value="service" v-model="usedServicesList" />
+                    <label :for="service">&nbsp;{{service}}</label>
+                  </div>
+                  <div class="m-1">
+                    <input type="checkbox" id="other" value="other" v-model="usedOther" />
+                    <label for="other">&nbsp;Other <span v-if="usedOther">(please specify)</span></label>
+
+                    <input v-if="usedOther" type="text" v-model="otherServices">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card text-bg-light mb-3">
+              <div class="card-body text-center">
+                <div class="mb-3">
+                  <div class="form-label">What percentage of your work did AI help you with?</div>
+                  <div>{{helpPercentage}}%</div>
+                  <input type="range" min="0" max="100" v-model="helpPercentage">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div v-if="usedAi === 'on'" class="col">
+          <div class="card text-bg-light mb-3">
+            <div class="card-body text-center">
+              <div class="mb-3">
+                <div class="form-label">In what ways did you use AI in this assignment?</div>
+              </div>
+              <div class="mb-3">
+                <div class="form-label">Writing</div>
+                <div v-for="item in writingList" class="m-1">
+                  <input type="checkbox" :id="item" :value="item" v-model="usedWritingList" />
+                  <label :for="item">&nbsp;{{item}}</label>
+                </div>
+              </div>
+              <div class="mb-3">
+                <div class="form-label">Reading</div>
+                <div v-for="item in readingList" class="m-1">
+                  <input type="checkbox" :id="item" :value="item" v-model="usedReadingList" />
+                  <label :for="item">&nbsp;{{item}}</label>
+                </div>
+              </div>
+              <div class="mb-3">
+                <div class="form-label">Research</div>
+                <div v-for="item in researchList" class="m-1">
+                  <input type="checkbox" :id="item" :value="item" v-model="usedResearchList" />
+                  <label :for="item">&nbsp;{{item}}</label>
+                </div>
+                <div class="m-1">
+                  <label for="persona"><input type="checkbox" id="persona" value="persona" v-model="usedPersona" />&nbsp;Use AI to create a persona of an <br class="d-none d-md-block">expert / historical figure and question them <span v-if="usedPersona">(please specify)</span></label>
+
+                  <input v-if="usedPersona" type="text" v-model="persona">
+                </div>
+              </div>
+              <div class="mb-3">
+                <div class="form-label">Audio Visual</div>
+                <div v-for="item in audVidList" class="m-1">
+                  <input type="checkbox" :id="item" :value="item" v-model="usedAudVidList" />
+                  <label :for="item">&nbsp;{{item}}</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- output: -->
+        <div class="col">
+          <div v-if="usedAi === 'off' || usedAi === 'on'" class="card text-bg-light mb-3">
+            <div class="card-body pre-wrap">
+              <div id="copy-text" title="copy text" @click="copyTheFullText()" class="mb-3 text-end">
+                <label for="copy-text"><small>Click to copy text </small></label>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                  class="bi bi-clipboard" viewBox="0 0 16 16">
+                  <path
+                    d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1z" />
+                  <path
+                    d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0z" />
+                </svg>
+              </div>
+              {{getTheFullText()}}
+            </div>
+          </div>
+          <div v-if="usedAi === 'off' || usedAi === 'on'" class="card text-bg-light mb-3">
+            <div class="card-body text-center">
+              <div class="mb-3">
+                <b>Students</b> — please copy and paste the above text into your assignment to share with your instructor how you used AI.
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- empty column for formatting purposes -->
+        <div v-if="usedAi !== 'on'" class="col"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p class="text-center my-4">
+        This generator is based on The AI Assessment Scale. For more information, visit <a class="text-white" href="https://aiassessmentscale.com/">aiassessmentscale.com</a>.
+        <br><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><img src="assets/by-nc-sa.png" width="117" height="41" alt="CC BY-NC-SA 4.0 DEED"></a>
+        &nbsp;Perkins, Furze, Roe & MacVaugh (2024). The AI Assessment Scale
+      </p>
+    </div>
+  </footer>
+  <script>
+    const { createApp, ref } = Vue
+
+    const vm = createApp({
+
+      data() {
+        return {
+          usedAi: '',
+          servicesList: ["ChatGPT", "Gemini", "CoPilot", 'Claude', 'School AI', 'Magic School', 'Grammrly AI', 'Perplexity'],
+          usedServicesList: [],
+          otherServices: '',
+          usedOther: false,
+          helpPercentage: 0,
+          writingList: ['Generate Ideas', 'Draft', 'Outline', 'Rephrase', 'Get Unstuck', 'Review / Provide Feedback'],
+          usedWritingList: [],
+          readingList: ['Simplify', 'Translate', 'Summarize'],
+          usedReadingList: [],
+          researchList: ['Research', 'Ask AI to make connections'],
+          usedResearchList: [],
+          persona: '',
+          usedPersona: false,
+          audVidList: ['Generate an Image', 'Produce a Song', 'Create a Video', 'Build a Presentation'],
+          usedAudVidList: [],
+        }
+      },
+      methods: {
+        copyTheFullText() {
+          let output = this.getTheFullText();
+          navigator.clipboard.writeText(output);
+        },
+        getTheFullText() {
+          let output = [];
+          if (this.usedAi === 'off') {
+            output.push('🚫 I did not use AI in this assignment')
+          } else if (this.usedAi === 'on') {
+            // used services:
+            output.push("🤖 I used AI in this assignment");
+            if (this.usedServicesList.length > 0 || this.usedOther) {
+              output.push('\n\nI used the following service(s):')
+              output.push(this.usedServicesList.map(x=>'\n• '+x).join(''));
+            }
+            if (this.usedOther != '') {
+              output.push(this.otherServices.split(' ').map(x=>'\n• '+x).join(''));
+            }
+
+            // help percentage
+            output.push(`\n\nI estimate that ${this.helpPercentage}% of this work was created by AI.`)
+
+            // writing
+            if (this.usedWritingList.length > 0 ) {
+              output.push('\n\n✏️ I used AI for content creation:')
+              output.push(this.usedWritingList.map(x=>'\n• '+x).join(''));
+            }
+            // reading
+            if (this.usedReadingList.length > 0 ) {
+              output.push('\n\n💡 I used AI for content understanding:')
+              output.push(this.usedReadingList.map(x=>'\n• '+x).join(''));
+            }
+            //research
+            if (this.usedResearchList.length > 0 || this.usedPersona) {
+              output.push('\n\n🔍 I used AI for research assistance:')
+              output.push(this.usedResearchList.map(x=>'\n• '+x).join(''));
+            }
+            if (this.persona != '') {
+              output.push(`Use AI to create a persona of an expert / historical figure and question them: ${this.persona}`.split().map(x=>'\n• '+x).join(''));
+            }
+            // audio visual
+            if (this.usedAudVidList.length > 0 ) {
+              output.push('\n\n📹 I used AI for generating audio and/or visual content:')
+              output.push(this.usedAudVidList.map(x=>'\n• '+x).join(''));
+            }
+
+          }
+          return output.join('');
+        }
+      },
+
+    }).mount('#app')
+
+  </script>
+</body>
+
+</html>
+
+<!-- TODO:
+figure out how to link used services to usedServicesList
+ use vue for-loop to list them
+
+-->
